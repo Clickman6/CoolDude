@@ -57,16 +57,12 @@ namespace Player {
             Vector3 movement = Vector3.right * _speed * h;
 
             if (IsGrounded) {
-                if ((h > 0 && IsRight != 1) || (h < 0 && IsRight != -1)) {
+                if (h > 0 && IsRight != 1 || h < 0 && IsRight != -1) {
                     ChangeDirection();
                 }
             }
 
-            if (_rb.velocity.x > _maxSpeed && h > 0) {
-                speedMultiplier = 0f;
-            }
-
-            if (_rb.velocity.x < -_maxSpeed && h < 0) {
+            if (_rb.velocity.x > _maxSpeed && h > 0 || _rb.velocity.x < -_maxSpeed && h < 0) {
                 speedMultiplier = 0f;
             }
 

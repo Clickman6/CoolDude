@@ -27,8 +27,8 @@ namespace Player {
         }
 
         private void SetPlayerRotation(Vector3 target) {
-            if ((target.normalized.x > 0 && Controller.Instance.IsRight != 1)
-                || (target.normalized.x < 0 && Controller.Instance.IsRight != -1)) {
+            if (target.normalized.x > 0 && Controller.Instance.IsRight != 1
+                || target.normalized.x < 0 && Controller.Instance.IsRight != -1) {
                 Controller.Instance.ChangeDirection();
             }
         }
