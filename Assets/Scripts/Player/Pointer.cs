@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace Player {
     public class Pointer : MonoBehaviour {
+        private Controller Player => Controller.Instance;
+
         private Camera _camera;
         [SerializeField] private Transform _aim;
         [SerializeField] private float _maxAimDistance;
@@ -21,15 +23,14 @@ namespace Player {
 
             SetAim(point, out Vector3 target);
 
-            if (!Controller.Instance.IsGrounded) {
+            if (!Player.IsGrounded) {
                 SetPlayerRotation(target);
             }
         }
 
         private void SetPlayerRotation(Vector3 target) {
-            if (target.normalized.x > 0 && Controller.Instance.IsRight != 1
-                || target.normalized.x < 0 && Controller.Instance.IsRight != -1) {
-                Controller.Instance.ChangeDirection();
+            if (target.normalized.x != 0 && Mathf.Sign(target.normalized.x) != Player.IsRight) {
+                Player.ChangeDirection();
             }
         }
 

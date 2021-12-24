@@ -44,6 +44,8 @@ namespace Player {
             } else {
                 UnsetSneak();
             }
+
+            Jump();
         }
 
         private void FixedUpdate() {
@@ -57,12 +59,12 @@ namespace Player {
             Vector3 movement = Vector3.right * _speed * h;
 
             if (IsGrounded) {
-                if (h > 0 && IsRight != 1 || h < 0 && IsRight != -1) {
+                if (h != 0 && Mathf.Sign(h) != IsRight) {
                     ChangeDirection();
                 }
             }
 
-            if (_rb.velocity.x > _maxSpeed && h > 0 || _rb.velocity.x < -_maxSpeed && h < 0) {
+            if (Mathf.Abs(_rb.velocity.x) > Mathf.Abs(_maxSpeed)) {
                 speedMultiplier = 0f;
             }
 
