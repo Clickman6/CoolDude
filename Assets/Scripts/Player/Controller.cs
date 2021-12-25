@@ -44,13 +44,11 @@ namespace Player {
             } else {
                 UnsetSneak();
             }
-
-            Jump();
         }
 
         private void FixedUpdate() {
             Move();
-            Jump();
+            // Jump();
         }
 
         private void Move() {
