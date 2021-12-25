@@ -48,7 +48,7 @@ namespace Player {
 
         private void FixedUpdate() {
             Move();
-            // Jump();
+            Jump();
         }
 
         private void Move() {
