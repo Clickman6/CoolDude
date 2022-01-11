@@ -2,17 +2,17 @@ using UnityEngine;
 
 namespace Player {
     public class Pointer : MonoBehaviour {
-        private Controller Player => Controller.Instance;
-
+        private Controller _player;
         private Camera _camera;
         [SerializeField] private Transform _aim;
         [SerializeField] private float _maxAimDistance;
 
         private void Start() {
             _camera = Camera.main;
+            _player = Base.Movement;
         }
 
-        private void Update() {
+        private void LateUpdate() {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             Plane plane = new Plane(-Vector3.forward, Vector3.zero);
 
@@ -23,27 +23,25 @@ namespace Player {
 
             SetAim(point, out Vector3 target);
 
-            if (!Player.IsGrounded) {
-                SetPlayerRotation(target);
+            if (!_player.IsGrounded) {
+                SetPlayerDirection(target);
             }
         }
 
-        private void SetPlayerRotation(Vector3 target) {
-            if (target.normalized.x != 0 && Mathf.Sign(target.normalized.x) != Player.IsRight) {
-                Player.ChangeDirection();
+        private void SetPlayerDirection(Vector3 target) {
+            if (target.normalized.x != 0 && Mathf.Sign(target.normalized.x) != _player.RightConst) {
+                _player.ChangeDirection();
             }
         }
 
         private void SetAim(Vector3 point, out Vector3 target) {
             target = point - transform.position;
 
-            if (target.magnitude > _maxAimDistance) {
-                _aim.position = transform.position + target.normalized * _maxAimDistance;
-            } else {
-                _aim.position = point;
-            }
+            float magnitude = Mathf.Clamp(target.magnitude, 0, _maxAimDistance);
 
-            transform.rotation = Quaternion.LookRotation(target);
+            _aim.position = transform.position + target.normalized * magnitude;
+
+            transform.LookAt(point);
         }
     }
 }
