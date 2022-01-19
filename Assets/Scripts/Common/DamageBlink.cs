@@ -17,23 +17,24 @@ namespace Common {
         }
 
         private IEnumerator BlinkEffect() {
+            Color defaultColor = new Color();
             Color color = new Color();
 
             for (float t = 0f; t < 1f; t += Time.deltaTime) {
                 color.r = (float)(Mathf.Sin(t * 15) * 0.5 + 0.5);
 
-                foreach (var renderer in _renderers) {
-                    foreach (var material in renderer.materials) {
-                        material.SetColor(EmissionColor, color);
+                for (var i = 0; i < _renderers.Length; i++) {
+                    for (var j = 0; j < _renderers[i].materials.Length; j++) {
+                        _renderers[i].materials[j].SetColor(EmissionColor, color);
                     }
                 }
 
                 yield return null;
             }
 
-            foreach (var renderer in _renderers) {
-                foreach (var material in renderer.materials) {
-                    material.SetColor(EmissionColor, new Color());
+            for (var i = 0; i < _renderers.Length; i++) {
+                for (var j = 0; j < _renderers[i].materials.Length; j++) {
+                    _renderers[i].materials[j].SetColor(EmissionColor, defaultColor);
                 }
             }
         }

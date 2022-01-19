@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour {
         Die();
     }
 
-    private void Die() {
+    public void Die() {
         Instantiate(_effectPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }

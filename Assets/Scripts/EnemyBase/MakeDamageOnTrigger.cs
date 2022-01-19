@@ -8,7 +8,7 @@ namespace EnemyBase {
         public int Damage => _damage;
 
         private void OnTriggerEnter(Collider other) {
-            if (other.attachedRigidbody.TryGetComponent(out PlayerHealth health)) {
+            if (other.attachedRigidbody && other.attachedRigidbody.TryGetComponent(out PlayerHealth health)) {
                 health.TakeDamage(Damage);
             }
         }

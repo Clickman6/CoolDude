@@ -2,45 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour where T : Component {
-
-    #region Fields
-
-    private static T instance;
-
-    #endregion
-
-    #region Properties
+public class Singleton<T> : MonoBehaviour where T : Component {
+    private static T _instance;
 
     public static T Instance {
         get {
-            if (instance != null) return instance;
+            if (_instance != null) return _instance;
 
-            instance = FindObjectOfType<T>();
+            _instance = FindObjectOfType<T>();
 
-            if (instance != null) return instance;
+            if (_instance != null) return _instance;
 
             GameObject obj = new GameObject();
             obj.name = typeof(T).Name;
-            instance = obj.AddComponent<T>();
+            _instance = obj.AddComponent<T>();
 
-            return instance;
+            return _instance;
         }
     }
-
-    #endregion
-
-    #region Methods
 
     protected virtual void Awake() {
-        if (instance == null) {
-            instance = this as T;
-            DontDestroyOnLoad(gameObject);
-        } else {
-            Destroy(gameObject);
+        if (_instance != null) {
+            Destroy(_instance.gameObject);
         }
+        
+        _instance = this as T;
     }
-
-    #endregion
-
 }

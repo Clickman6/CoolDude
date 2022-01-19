@@ -1,18 +1,21 @@
+using Managers;
 using UnityEngine;
 
 namespace Player {
     public class Pointer : MonoBehaviour {
-        private Controller _player;
+        private Control _player;
         private Camera _camera;
         [SerializeField] private Transform _aim;
         [SerializeField] private float _maxAimDistance;
 
         private void Start() {
             _camera = Camera.main;
-            _player = Base.Movement;
+            _player = PlayerBase.Movement;
         }
 
         private void LateUpdate() {
+            if (GameManager.IsPause) return;
+
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
             Plane plane = new Plane(-Vector3.forward, Vector3.zero);
 

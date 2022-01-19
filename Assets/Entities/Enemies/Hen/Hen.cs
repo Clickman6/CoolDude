@@ -15,7 +15,7 @@ public class Hen : MonoBehaviour {
 
     private void Start() {
         _rb = GetComponent<Rigidbody>();
-        _player = Base.Instance.transform;
+        _player = PlayerBase.Transform;
     }
 
     private void FixedUpdate() {

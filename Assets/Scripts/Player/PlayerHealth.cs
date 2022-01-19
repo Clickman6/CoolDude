@@ -17,20 +17,23 @@ namespace Player {
 
         public UnityEvent<int> EventOnTakeDamage;
         public UnityEvent<int> EventOnAddHealth;
-        
+        public UnityEvent EventOnDie;
+
         public void TakeDamage(int value) {
             if (_isInvulnerable) return;
-            
+
             _health -= value;
 
             if (Health <= 0) {
                 _health = 0;
                 Die();
+
+                return;
             }
-            
+
             _isInvulnerable = true;
             Invoke(nameof(ResetInvulnerable), 1f);
-            
+
             EventOnTakeDamage.Invoke(Health);
             AudioManager.Instance.PlayPlayerHit(Random.Range(0.75f, 1.25f));
         }
@@ -41,7 +44,7 @@ namespace Player {
             if (Health > MaxHealth) {
                 _health = MaxHealth;
             }
-            
+
             EventOnAddHealth.Invoke(Health);
         }
 
@@ -50,8 +53,8 @@ namespace Player {
         }
 
         public void Die() {
-            GameManager.Pause();
-            Destroy(gameObject);
+            EventOnDie.Invoke();
+            gameObject.SetActive(false);
         }
     }
 }

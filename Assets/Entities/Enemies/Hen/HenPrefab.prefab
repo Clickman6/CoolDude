@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3319230790059937090}
   - component: {fileID: 2880581425055380201}
   - component: {fileID: 8940336819826635607}
+  - component: {fileID: 4961857169973102126}
   - component: {fileID: 1766061471950909921}
   - component: {fileID: 4570330843882681208}
   m_Layer: 0
@@ -67,6 +68,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  EventOnDie:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &9074248128319317667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,6 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06fdb5e452314459081b342c34ce7cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _health: {fileID: 1146712749153699054}
   _dieOnAnyCollision: 0
 --- !u!114 &3319230790059937090
 MonoBehaviour:
@@ -128,6 +133,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   _accelerationTime: 1
+--- !u!114 &4961857169973102126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2696015819314190319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c75a60d170f46baad18cc1d19bf969, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _distanceToActivate: 20
 --- !u!54 &1766061471950909921
 Rigidbody:
   m_ObjectHideFlags: 0

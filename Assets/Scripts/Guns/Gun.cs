@@ -6,33 +6,50 @@ using Random = UnityEngine.Random;
 public class Gun : MonoBehaviour {
     private float _timer;
 
-    [SerializeField] private GameObject _bulletPrefab;
-    [SerializeField] private Transform _spawner;
-    [SerializeField] private GameObject _flash;
+    [Header("Settings")]
     [SerializeField] private float _speed;
     [SerializeField] private float _shotPeriod;
+    [SerializeField] private AudioSource _audioSource;
+
+    [Header("Spawn")]
+    [SerializeField] private Rigidbody _bulletPrefab;
+    [SerializeField] private Transform _spawner;
+
+    [Header("Flash")]
+    [SerializeField] private Transform _flash;
 
     private Coroutine _flashCoroutine;
 
     private void Awake() {
-        _flash.SetActive(false);
+        _flash.gameObject.SetActive(false);
     }
 
-    private void Update() {
-        _timer += Time.deltaTime;
+    protected void Update() {
+        if (GameManager.IsPause) return;
+
+        _timer += Time.unscaledDeltaTime;
 
         if (Input.GetKey(KeyCode.Mouse0) && _timer > _shotPeriod) {
-            CreateBullet();
+            _timer = 0;
+
+            Shot();
         }
     }
 
-    private void CreateBullet() {
-        GameObject newBullet = Instantiate(_bulletPrefab, _spawner.position, _spawner.rotation);
-        newBullet.GetComponent<Rigidbody>().velocity = _spawner.forward * _speed;
-        AudioManager.Instance.PlayShot(Random.Range(0.75f, 1.25f));
+    public virtual void Shot() {
+        Rigidbody newBullet = Instantiate(_bulletPrefab, _spawner.position, _spawner.rotation);
+        newBullet.velocity = _spawner.forward * _speed;
 
-        _timer = 0;
+        PlayShotSound();
+        StartFlash();
+    }
 
+    private void PlayShotSound() {
+        _audioSource.pitch = Random.Range(0.75f, 1.25f);
+        _audioSource.Play();
+    }
+
+    private void StartFlash() {
         if (_flashCoroutine != null) {
             StopCoroutine(_flashCoroutine);
         }
@@ -41,20 +58,30 @@ public class Gun : MonoBehaviour {
     }
 
     private IEnumerator ShowFlash() {
-        _flash.SetActive(true);
+        _flash.gameObject.SetActive(true);
 
-        float scale = _flash.transform.localScale.x;
+        float scale = _flash.localScale.x;
         scale = Random.Range(scale - 0.25f, scale + 0.25f);
-        _flash.transform.localScale = Vector3.zero;
-        _flash.transform.localEulerAngles = new Vector3(0f, 0f, Random.Range(0, 90));
+        _flash.localScale = Vector3.zero;
+        _flash.localEulerAngles = new Vector3(0f, 0f, Random.Range(0, 90));
 
-        while (_flash.transform.localScale.x != scale) {
-            _flash.transform.localScale =
-                Vector3.MoveTowards(_flash.transform.localScale, Vector3.one * scale, Time.deltaTime * 100f);
+        while (_flash.localScale.x != scale) {
+            _flash.localScale =
+                Vector3.MoveTowards(_flash.localScale, Vector3.one * scale, Time.deltaTime * 100f);
 
             yield return null;
         }
 
-        _flash.SetActive(false);
+        _flash.gameObject.SetActive(false);
     }
+
+    public virtual void Activate() {
+        gameObject.SetActive(true);
+    }
+
+    public virtual void Deactivate() {
+        gameObject.SetActive(false);
+    }
+
+    public virtual void PickUpLoot(int numberOfBullets) { }
 }
