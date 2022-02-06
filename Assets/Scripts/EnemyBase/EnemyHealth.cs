@@ -7,6 +7,7 @@ namespace EnemyBase {
         [SerializeField] private int _health = 1;
 
         public UnityEvent<int> EventOnTakeDamage;
+        public UnityEvent EventOnDie;
 
         public int Health => _health;
 
@@ -23,6 +24,7 @@ namespace EnemyBase {
 
         public void Die() {
             Destroy(gameObject);
+            EventOnDie.Invoke();
         }
     }
 }

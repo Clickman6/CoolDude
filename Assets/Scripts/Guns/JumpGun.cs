@@ -26,6 +26,7 @@ namespace Guns {
 
             if (_isCharged) {
                 if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                    _rb.velocity = Vector3.zero;
                     _rb.AddForce(-transform.forward * _speed, ForceMode.VelocityChange);
                     _weapons.GetCurrentGun.Shot();
 

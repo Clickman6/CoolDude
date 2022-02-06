@@ -9,6 +9,7 @@ public class EnemyController : Singleton<EnemyController> {
     private Transform _target;
 
     public List<ActivateByDistance> _enemies = new List<ActivateByDistance>();
+    public bool BossIsDie;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI _enemiesLabel;
@@ -20,7 +21,7 @@ public class EnemyController : Singleton<EnemyController> {
     protected override void Awake() {
         base.Awake();
 
-        OnEnemyCountChange.AddListener(UpdateLabel);
+        // OnEnemyCountChange.AddListener(UpdateLabel);
     }
 
     private void Start() {
@@ -38,20 +39,24 @@ public class EnemyController : Singleton<EnemyController> {
     public void AddEnemy(ActivateByDistance enemy) {
         _enemies.Add(enemy);
 
-        OnEnemyCountChange.Invoke(_enemies.Count);
+        OnEnemyCountChange?.Invoke(_enemies.Count);
     }
 
     public void DeleteEnemy(ActivateByDistance enemy) {
         _enemies.Remove(enemy);
 
-        OnEnemyCountChange.Invoke(_enemies.Count);
+        OnEnemyCountChange?.Invoke(_enemies.Count);
 
         if (_enemies.Count > 0) return;
 
-        OnAllEnemiesDie.Invoke(Time.time);
+        OnAllEnemiesDie?.Invoke(Time.time);
     }
 
     private void UpdateLabel(int amount) {
         _enemiesLabel.text = amount.ToString();
+    }
+
+    public void DieBoss() {
+        BossIsDie = true;
     }
 }

@@ -4,27 +4,22 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class Gun : MonoBehaviour {
-    private float _timer;
+    protected float _timer;
 
     [Header("Settings")]
     [SerializeField] private float _speed;
-    [SerializeField] private float _shotPeriod;
+    [SerializeField] protected float _shotPeriod;
     [SerializeField] private AudioSource _audioSource;
 
     [Header("Spawn")]
     [SerializeField] private Rigidbody _bulletPrefab;
     [SerializeField] private Transform _spawner;
 
-    [Header("Flash")]
-    [SerializeField] private Transform _flash;
+    [Header("Flash & Smoke")]
+    [SerializeField] private ParticleSystem _flash;
+    [SerializeField] private ParticleSystem _smoke;
 
-    private Coroutine _flashCoroutine;
-
-    private void Awake() {
-        _flash.gameObject.SetActive(false);
-    }
-
-    protected void Update() {
+    protected virtual void Update() {
         if (GameManager.IsPause) return;
 
         _timer += Time.unscaledDeltaTime;
@@ -41,7 +36,7 @@ public class Gun : MonoBehaviour {
         newBullet.velocity = _spawner.forward * _speed;
 
         PlayShotSound();
-        StartFlash();
+        Effects();
     }
 
     private void PlayShotSound() {
@@ -49,30 +44,9 @@ public class Gun : MonoBehaviour {
         _audioSource.Play();
     }
 
-    private void StartFlash() {
-        if (_flashCoroutine != null) {
-            StopCoroutine(_flashCoroutine);
-        }
-
-        _flashCoroutine = StartCoroutine(ShowFlash());
-    }
-
-    private IEnumerator ShowFlash() {
-        _flash.gameObject.SetActive(true);
-
-        float scale = _flash.localScale.x;
-        scale = Random.Range(scale - 0.25f, scale + 0.25f);
-        _flash.localScale = Vector3.zero;
-        _flash.localEulerAngles = new Vector3(0f, 0f, Random.Range(0, 90));
-
-        while (_flash.localScale.x != scale) {
-            _flash.localScale =
-                Vector3.MoveTowards(_flash.localScale, Vector3.one * scale, Time.deltaTime * 100f);
-
-            yield return null;
-        }
-
-        _flash.gameObject.SetActive(false);
+    private void Effects() {
+        _flash.Play();
+        _smoke.Play();
     }
 
     public virtual void Activate() {

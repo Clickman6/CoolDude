@@ -17,7 +17,7 @@ namespace Managers {
         }
 
         public void GameIsOver() {
-            if (EnemyController.Instance._enemies.Count <= 0) {
+            if (EnemyController.Instance.BossIsDie) {
                 Winning();
             } else {
                 Losing();
@@ -35,6 +35,7 @@ namespace Managers {
         }
 
         public static void Pause() {
+            Cursor.visible = true;
             Instance.OnGamePause.Invoke();
 
             IsPause = true;
@@ -42,6 +43,7 @@ namespace Managers {
         }
 
         public static void UnPause() {
+            Cursor.visible = false;
             Instance.OnGameUnPause.Invoke();
 
             IsPause = false;

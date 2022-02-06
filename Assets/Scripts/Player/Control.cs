@@ -18,9 +18,9 @@ namespace Player {
         [Header("Jump")]
         private bool _canJump;
         private bool _jumpControl;
-        private float _jumpTime;
+        private float _jumpFrames;
         [SerializeField] private float _jumpForce;
-        [SerializeField] private float _jumpControlTime;
+        [SerializeField] private float _jumpControlFrames;
 
         [Header("Ground")]
         private bool _isGrounded;
@@ -28,8 +28,6 @@ namespace Player {
         [Header("Other")]
         [SerializeField] private Transform _bodyTransform;
         [SerializeField] private float _angleDirection;
-
-        [SerializeField] private AnimationCurve _curve; // todo delete
 
         // Properties
         public int  RightConst => _isRight ? 1 : -1;
@@ -42,20 +40,17 @@ namespace Player {
         private void Update() {
             if (GameManager.IsPause) return;
 
-            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.S) || !_isGrounded) {
+            if (Input.GetKey(KeyCode.LeftControl) || !_isGrounded) {
                 SetSneak();
             } else {
                 UnsetSneak();
             }
 
-            Keyframe keyframe = new Keyframe(Time.time, Mathf.Abs(_rb.velocity.x));
-
-            _curve.AddKey(keyframe);
+            Jump();
         }
 
         private void FixedUpdate() {
             Move();
-            Jump();
         }
 
         private void Move() {
@@ -77,27 +72,43 @@ namespace Player {
 
             if (_isGrounded) {
                 _rb.AddForce(-Vector3.right * _rb.velocity.x * _friction, ForceMode.VelocityChange);
+
+                transform.rotation =
+                    Quaternion.Lerp(transform.rotation, Quaternion.identity, Time.deltaTime * 20f);
             }
         }
 
         private void Jump() {
-            if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W)) {
-                if (_canJump) _jumpControl = true;
+            if (Input.GetKeyDown(KeyCode.Space) && _canJump) {
+                _rb.velocity = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
 
+                _jumpControl = true;
                 _canJump = false;
-            } else {
+
+                _rb.freezeRotation = false;
+                _rb.AddRelativeTorque(0f, 0f, 10f * -RightConst, ForceMode.VelocityChange);
+            }
+
+            if (Input.GetKeyUp(KeyCode.Space)) {
                 _jumpControl = false;
             }
 
             if (_jumpControl) {
-                _jumpTime += Time.fixedUnscaledDeltaTime;
+                if (_jumpFrames++ < _jumpControlFrames) {
+                    _rb.AddForce(Vector3.up * _jumpForce / _jumpFrames,
+                                 ForceMode.VelocityChange);
 
-                if (_jumpTime < _jumpControlTime) {
-                    _rb.AddForce(transform.up * _jumpForce / (_jumpTime * 10), ForceMode.VelocityChange);
+                } else {
+                    _jumpControl = false;
                 }
             } else {
-                _jumpTime = 0;
+                _jumpFrames = 0;
             }
+        }
+
+        // Для прыжка с веревки
+        public void ResetJump() {
+            _canJump = true;
         }
 
         private void SetSneak() {
@@ -129,19 +140,38 @@ namespace Player {
             }
         }
 
+        /*
+         * Этот код для 1 прыжка в любой момент после колизии, если прописать в OnCollisionStay,
+         * то сначала Jump() установит _canJump = false, а потом выполнится OnCollisionStay,
+         * который заменит _canJump на true (из-за чего получается двойной прыжок)
+         * и только потом будет OnCollisionExit 
+         */
+        private void OnCollisionEnter(Collision other) {
+            CheckStayGround(other);
+
+            if (_isGrounded) {
+                _canJump = true;
+
+                _rb.freezeRotation = true;
+            }
+        }
+
         private void OnCollisionStay(Collision other) {
+            CheckStayGround(other);
+        }
+
+        private void OnCollisionExit(Collision other) {
+            _isGrounded = false;
+        }
+
+        private void CheckStayGround(Collision other) {
             for (int i = 0; i < other.contactCount; i++) {
                 float angle = Vector3.Angle(other.contacts[i].normal, Vector3.up);
 
                 if (angle <= 45f) {
                     _isGrounded = true;
-                    _canJump = true;
                 }
             }
-        }
-
-        private void OnCollisionExit(Collision other) {
-            _isGrounded = false;
         }
     }
 }
